@@ -2,8 +2,8 @@
 --- Set Variables ---
 ---------------------
 --- WIFI CONFIGURATION ---
-WIFI_SSID = "***REMOVED***"
-WIFI_PASSWORD = "***REMOVED***"
+WIFI_SSID = "PUT_YOUR_SSID"
+WIFI_PASSWORD = "PUT_YOUR_PASSWORD"
 WIFI_SIGNAL_MODE = wifi.PHYMODE_N
 --- IP CONFIGURATION (Leave blank to use DHCP) ---
 ESP8266_IP=""
@@ -20,18 +20,18 @@ gpio.write(blue_led, gpio.HIGH)
 
 --- Connect to the wifi network
 function connectToWiFiAP()
-	print("Connnecting to Wi-Fi AP...")
-	print("Old IP: ")
-	print(wifi.sta.getip())
-	wifi.setmode(wifi.STATION) 
-	wifi.setphymode(WIFI_SIGNAL_MODE)
-	wifi.sta.config(WIFI_SSID, WIFI_PASSWORD) 
-	wifi.sta.connect()
-	if ESP8266_IP ~= "" then
-	 wifi.sta.setip({ip=ESP8266_IP,netmask=ESP8266_NETMASK,gateway=ESP8266_GATEWAY})
-	end
-	print("New IP: ")
-	print(wifi.sta.getip())
+    print("Connnecting to Wi-Fi AP...")
+    print("Old IP: ")
+    print(wifi.sta.getip())
+    wifi.setmode(wifi.STATION) 
+    wifi.setphymode(WIFI_SIGNAL_MODE)
+    wifi.sta.config(WIFI_SSID, WIFI_PASSWORD) 
+    wifi.sta.connect()
+    if ESP8266_IP ~= "" then
+     wifi.sta.setip({ip=ESP8266_IP,netmask=ESP8266_NETMASK,gateway=ESP8266_GATEWAY})
+    end
+    print("New IP: ")
+    print(wifi.sta.getip())
 end  -- END connectToWiFiAP()
 
 ----------------------------
@@ -63,7 +63,7 @@ function receiver(conn,request)
     local response = {"HTTP/1.0 200 OK\r\nServer: NodeMCU on ESP8266\r\nContent-Type: text/html\r\n\r\n"}
     response[#response + 1] = "<h1> ESP8266 Web Server</h1>"
     response[#response + 1] = "<p>GPIO2 <a href=\"?pin=ON\"><button>ON</button></a>&nbsp;<a href=\"?pin=OFF\"><button>OFF</button></a></p>"
-
+    response[#response + 1] = "<p> Time: " .. string.format("%02d:%02d:%02d  %02d/%02d/%04d",getRTCtime(timeZone)) .. "</p>"
 -- sends and removes the first element from the 'response' table
     local function send(localSocket)
         if #response > 0 then
@@ -99,17 +99,17 @@ end  --END getRTCtime()
 
 -- Show time and date formated in the console
 function showTimeDate()
-	timeZone = 1 -- time zone +1 for Spain
-	hour, minute, second, day, month, year = 0
-	-- get the hour, minute, second, day, month and year from the ESP8266 RTC
-	hour,minute,second,month,day,year=getRTCtime(timeZone)
-	if year ~= 0 then
-		-- format and print the hour, minute second, month, day and year retrieved from the ESP8266 RTC
-		print(string.format("%02d:%02d:%02d  %02d/%02d/%04d",hour,minute,second,month,day,year))
-		--print(string.format("%02d:%02d:%02d  %02d/%02d/%04d",getRTCtime(timeZone)))    
-	else
-		print("Unable to get time and date from the NTP server.")
-	end
+    timeZone = 1 -- time zone +1 for Spain
+    hour, minute, second, day, month, year = 0
+    -- get the hour, minute, second, day, month and year from the ESP8266 RTC
+    hour,minute,second,month,day,year=getRTCtime(timeZone)
+    if year ~= 0 then
+        -- format and print the hour, minute second, month, day and year retrieved from the ESP8266 RTC
+        print(string.format("%02d:%02d:%02d  %02d/%02d/%04d",hour,minute,second,month,day,year))
+        --print(string.format("%02d:%02d:%02d  %02d/%02d/%04d",getRTCtime(timeZone)))    
+    else
+        print("Unable to get time and date from the NTP server.")
+    end
 end  --END showTimeDate()
 
 --------------------------
@@ -121,7 +121,7 @@ connectToWiFiAP()
 -- retrieve and display the time and date from the ESP8266 RTC
 print("Contacting NTP server...\n")
 sntp.sync(nil, nil, nil, 0)
-tmr.alarm(0,500,0,showTimeDate())
+tmr.alarm(0,500,0,showTimeDate)
 -- Init server
 srv=net.createServer(net.TCP)
 srv:listen(80, function(conn) conn:on("receive", receiver) end)
