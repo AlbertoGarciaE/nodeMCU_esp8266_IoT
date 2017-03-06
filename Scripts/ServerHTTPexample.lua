@@ -3,6 +3,7 @@ print(wifi.sta.getip())
 --- Set Variables ---
 -----------------------------------------------
 --- WIFI CONFIGURATION ---
+-- Fill in with your ssid and password where it says ***REMOVED***
 WIFI_SSID = "***REMOVED***"
 WIFI_PASSWORD = "***REMOVED***"
 WIFI_SIGNAL_MODE = wifi.PHYMODE_N
